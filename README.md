@@ -130,7 +130,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
 1. Click this button to navigate to the Azure Portal deployment page.
 
-   [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fhubertsui%2Fbetter-etling%2Fmaster%2Fazuredeploy.json)
+   [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Faci-extract-load-transform-sample%2Fmaster%2Fazuredeploy.json)
 
 2. Choose the resource group created in the previous steps.
 
