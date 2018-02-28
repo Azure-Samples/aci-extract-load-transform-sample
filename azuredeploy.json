@@ -1,0 +1,199 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountName": {
+            "type": "string"
+        },
+        "storageShareName": {
+            "type": "string",
+            "defaultValue": "acishare"
+        },
+        "administratorLogin": {
+            "type": "string",
+            "defaultValue": "postgres"
+        },
+        "administratorLoginPassword": {
+            "type": "securestring"
+        },
+        "extractingContainerImage": {
+            "type": "string",
+            "defaultValue": "hubertsui/extracting"
+        },
+        "transformingContainerImage": {
+            "type": "string",
+            "defaultValue": "hubertsui/transforming"
+        },
+        "loadingContainerImage": {
+            "type": "string",
+            "defaultValue": "hubertsui/loading"
+        },
+        "renderingContainerImage": {
+            "type": "string",
+            "defaultValue": "hubertsui/rendering"
+        }
+    },
+    "variables": {
+        "postgresServerName": "[concat(toLower(uniqueString(resourceGroup().id)),'postgres')]",
+        "postgresFirewallRuleName": "[concat(variables('postgresServerName'),'/firewall')]",
+        "extractingContainerName": "extracting",
+        "transformingContainerName": "transforming",
+        "loadingContainerName": "loading",
+        "renderingContainerName": "rendering",
+        "connectionString": "[concat('host=',variables('postgresServerName'),'.postgres.database.azure.com user=',parameters('administratorLogin'),'@',variables('postgresServerName'),' password=',parameters('administratorLoginPassword'),' dbname=postgres sslmode=verify-full')]"
+    },
+    "resources": [{
+        "apiVersion": "2017-04-30-preview",
+        "kind": "",
+        "location": "[resourceGroup().location]",
+        "name": "[variables('postgresServerName')]",
+        "properties": {
+            "version": "9.6",
+            "administratorLogin": "[parameters('administratorLogin')]",
+            "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+            "storageMB": 51200
+        },
+        "sku": {
+            "name": "PGSQLB50",
+            "tier": "Basic",
+            "capacity": 50,
+            "size": 51200
+        },
+        "type": "Microsoft.DBforPostgreSQL/servers",
+        "resources": [{
+            "name": "[variables('postgresFirewallRuleName')]",
+            "type": "Microsoft.DBforPostgreSQL/servers/firewallRules",
+            "apiVersion": "2017-04-30-preview",
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('postgresServerName'))]"
+            ],
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "255.255.255.255"
+            }
+        }]
+    }, {
+        "name": "MS-ACIAKS-ETLContainerGroups",
+        "type": "Microsoft.ContainerInstance/containerGroups",
+        "apiVersion": "2017-10-01-preview",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+            "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('postgresServerName'))]"
+        ],
+        "properties": {
+            "containers": [{
+                    "name": "[variables('extractingContainerName')]",
+                    "properties": {
+                        "image": "[parameters('extractingContainerImage')]",
+                        "resources": {
+                            "requests": {
+                                "cpu": 1,
+                                "memoryInGb": 1.5
+                            }
+                        },
+                        "volumeMounts": [{
+                            "name": "etl-volumn",
+                            "mountPath": "/mnt/shared",
+                            "readOnly": false
+                        }],
+                        "environmentVariables": [{
+                            "name": "FILE_PATH",
+                            "value": "/mnt/shared/cleaned_hm.csv"
+                        }]
+                    }
+                },
+                {
+                    "name": "[variables('transformingContainerName')]",
+                    "properties": {
+                        "image": "[parameters('transformingContainerImage')]",
+                        "resources": {
+                            "requests": {
+                                "cpu": 1,
+                                "memoryInGb": 1.5
+                            }
+                        },
+                        "volumeMounts": [{
+                            "name": "etl-volumn",
+                            "mountPath": "/mnt/shared",
+                            "readOnly": false
+                        }],
+                        "environmentVariables": [{
+                            "name": "FILE_PATH",
+                            "value": "/mnt/shared/cleaned_hm.csv"
+                        }, {
+                            "name": "RESULT_PATH",
+                            "value": "/mnt/shared/result.csv"
+                        }]
+                    }
+                },
+                {
+                    "name": "[variables('loadingContainerName')]",
+                    "properties": {
+                        "image": "[parameters('loadingContainerImage')]",
+                        "resources": {
+                            "requests": {
+                                "cpu": 1,
+                                "memoryInGb": 1.5
+                            }
+                        },
+                        "volumeMounts": [{
+                            "name": "etl-volumn",
+                            "mountPath": "/mnt/shared",
+                            "readOnly": false
+                        }],
+                        "environmentVariables": [{
+                            "name": "CONNECTION_STRING",
+                            "value": "[variables('connectionString')]"
+                        }, {
+                            "name": "FILE_PATH",
+                            "value": "/mnt/shared/result.csv"
+                        }]
+                    }
+                },
+                {
+                    "name": "[variables('renderingContainerName')]",
+                    "properties": {
+                        "image": "[parameters('renderingContainerImage')]",
+                        "resources": {
+                            "requests": {
+                                "cpu": 1,
+                                "memoryInGb": 1.5
+                            }
+                        },
+                        "environmentVariables": [{
+                            "name": "CONNECTION_STRING",
+                            "value": "[variables('connectionString')]"
+                        }],
+                        "ports": [{
+                            "port": 80
+                        }]
+                    }
+                }
+            ],
+            "osType": "Linux",
+            "restartPolicy": "OnFailure",
+            "ipAddress": {
+                "type": "Public",
+                "ports": [{
+                    "protocol": "tcp",
+                    "port": "80"
+                }]
+            },
+            "volumes": [{
+                "name": "etl-volumn",
+                "azureFile": {
+                    "shareName": "[parameters('storageShareName')]",
+                    "readOnly": false,
+                    "storageAccountName": "[parameters('storageAccountName')]",
+                    "storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+                }
+            }]
+        }
+    }],
+    "outputs": {
+        "containerIPv4Address": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', 'MS-ACIAKS-ETLContainerGroups')).ipAddress.ip]"
+        }
+    }
+}
