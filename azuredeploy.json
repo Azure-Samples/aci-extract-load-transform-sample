@@ -17,20 +17,16 @@
             "type": "securestring"
         },
         "extractingContainerImage": {
-            "type": "string",
-            "defaultValue": "hubertsui/extracting"
+            "type": "string"
         },
         "transformingContainerImage": {
-            "type": "string",
-            "defaultValue": "hubertsui/transforming"
+            "type": "string"
         },
         "loadingContainerImage": {
-            "type": "string",
-            "defaultValue": "hubertsui/loading"
+            "type": "string"
         },
         "renderingContainerImage": {
-            "type": "string",
-            "defaultValue": "hubertsui/rendering"
+            "type": "string"
         }
     },
     "variables": {
