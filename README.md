@@ -173,33 +173,33 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
    ![](images/deploy-04.png)
 
-2. Click the **postgres** database, remember the **Server name** and **Server admin login name**.
+2. Click the Postgres database, remember the **Server name** and **Server admin login name**.
 
    ![](images/deploy-07.png)
 
-3. Open the **Shell** in the Azure Portal.
+3. Open the **Cloud Shell** on the top bar.
 
    ![](images/deploy-01.png)
 
-4. Add the updated Azure Database for PostgreSQL management extension using the following command.
+4. Run this command to add the updated Azure Database for PostgreSQL management extension in case you didn't do that before.
 
    ```powershell
    az extension add --name rdbms
    ```
 
-5. Run the following psql command then input the **Administrator Login Password** in deployment to connect to an Azure Database for PostgreSQL database.
-    > **Note:** Please replace the **&lt;Server name&gt;** and **&lt;Server admin login name&gt;** to values in postgres dashboard.
+5. Run the psql command to connect to PostgreSQL database, and enter the password chosen in previous steps when prompted for password.
+    > **Note:** Please replace the **&lt;Server name&gt;** and **&lt;Server admin login name&gt;** with the values shown in Postgres resource blade.
 
    ```powershell
    psql --host=<Server name> --username=<Server admin login name> --dbname=postgres
    ```
    
-6. Run the following SQL command to create an index to table **words**
+6. Run the following SQL command to create index on the column **name** in the table **words**.
 
     ```SQL
     CREATE INDEX ON words(name);
     ```
-6. Run the following SQL command to query first 10 records in **words**
+6. Run the following SQL command to query the first 10 records in the table **words**.
 
     ```SQL
     SELECT * FROM words LIMIT 10;
