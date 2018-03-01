@@ -1,8 +1,8 @@
-# Extracting, transforming, and loading data with ACI
+# Extracting, transforming, and loading data with Azure Container Instances (ACI)
 
-In this sample, we're trying to do some basic analysis on the [HappyDB](https://github.com/rit-public/HappyDB) dataset, by doing word count and drawing word cloud, to highlight the words appear more frequently in the people's happy moments.
+In this sample, we're analyzing the [HappyDB](https://github.com/rit-public/HappyDB) dataset by creating a word cloud of the most frequent words in people's self-reported happiest moments. We'll extract a data source, load it into a database, and transform the data into something we can render graphically.
 
-**Table of content**
+**Table of contents**
 
 [Foreword](#foreword)
 
@@ -16,17 +16,17 @@ In this sample, we're trying to do some basic analysis on the [HappyDB](https://
 
 * [View Demo in Web](#view-demo-in-web)
 
-* [Create Index and Query Data in Azure Shell](#create-index-and-query-data-in-azure-shell)
+* [Create Index and Query Data in Azure Cloud Shell](#create-index-and-query-data-in-azure-cloud-shell)
 
 [References](#references)
 
 ## Foreword
 
-Making ETLing simpler using containers as a plug and play model.
+Make ETLing simpler by using Azure Container Instances as a plug and play model.
 
 The application with separate common pieces of the ETLing process into separate docker containers. For example, the unzip container in the project will take a link as an input then download and unzip the file at that link. A separate container takes a csv location as an input and puts it into a Postgres database. This allows for plug and play ETLing pipelines for the data.
 
-Using ACI, a user can define container groups with the exact elements they want. For example put the unzip and postgres modules together and to download a zip file from a datasource, unzip it then feed it into a databases all without writing a line of code. This allows you to only pay per second using the ACI instance. 
+With Azure Container Instances, an user can define container groups with the exact elements they want. For example put the unzip and postgres modules together and to download a zip file from a datasource, unzip it then feed it into a databases all without writing a line of code. This allows you to only pay per second using the Azure Container Instances. 
 
 This document will guide you through the steps to deploy the solution to your environment.
 
@@ -80,13 +80,13 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
 > **Note:** The following commands are running on Azure Portal.
 
-1. Open the **Shell** in the Azure Portal.
+1. Open the **Cloud Shell** (Bash) in the Azure Portal.
 
    ![](images/deploy-01.png)
 
 2. Execute the command below to choose your subscription.
 
-   ```powershell
+   ```bash
    az account set --subscription SELECTED_SUBSCRIPTION_ID
    ```
 
@@ -94,7 +94,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
    > **Note:** Change the placeholder `[RESOURCE_GROUP_NAME]` to the name for the new resource group you will create.
    
-   ```powershell
+   ```bash
    ACI_PERS_RESOURCE_GROUP=[RESOURCE_GROUP_NAME]
    ACI_PERS_STORAGE_ACCOUNT_NAME=mystorageaccount$RANDOM
    ACI_PERS_LOCATION=eastus
@@ -104,7 +104,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
 4. Execute the commands below to create the storage account.
 
-   ```powershell
+   ```bash
    az storage account create \
     --resource-group $ACI_PERS_RESOURCE_GROUP \
     --name $ACI_PERS_STORAGE_ACCOUNT_NAME \
@@ -114,14 +114,14 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
 5. Execute the commands below to create the file share.
 
-   ```powershell
+   ```bash
    export AZURE_STORAGE_CONNECTION_STRING=`az storage account show-connection-string --resource-group $ACI_PERS_RESOURCE_GROUP --name $ACI_PERS_STORAGE_ACCOUNT_NAME --output tsv`
    az storage share create -n $ACI_PERS_SHARE_NAME
    ```
 
 6. Execute the commands below to shows the storage account you created.
 
-   ```powershell
+   ```bash
    echo $ACI_PERS_STORAGE_ACCOUNT_NAME
    ```
    ![](images/deploy-02.png)
@@ -165,7 +165,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
    ![](images/deploy-06.png)
 
-### Create Index and Query Data in Azure Shell
+### Create Index and Query Data in Azure Cloud Shell
 
 > **Note:** The following commands are running on Azure Portal.
 
@@ -177,20 +177,20 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
    ![](images/deploy-07.png)
 
-3. Open the **Cloud Shell** on the top bar.
+3. Open the **Cloud Shell** (Bash) on the top bar.
 
    ![](images/deploy-01.png)
 
 4. Run this command to add the updated Azure Database for PostgreSQL management extension in case you didn't do that before.
 
-   ```powershell
+   ```bash
    az extension add --name rdbms
    ```
 
 5. Run the psql command to connect to PostgreSQL database, and enter the password chosen in previous steps when prompted for password.
     > **Note:** Please replace the **&lt;Server name&gt;** and **&lt;Server admin login name&gt;** with the values shown in Postgres resource blade.
 
-   ```powershell
+   ```bash
    psql --host=<Server name> --username=<Server admin login name> --dbname=postgres
    ```
    
