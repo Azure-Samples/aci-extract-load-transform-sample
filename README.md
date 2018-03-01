@@ -55,7 +55,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 4. Execute the commands below to build and push the transforming image to the Docker Hub.
 
    ```powershell
-   cd ../extracting
+   cd ../transforming
    docker build -t YOURDOCKERACCOUNTNAME/transforming .
    docker push YOURDOCKERACCOUNTNAME/transforming
    ```
@@ -63,7 +63,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 5. Execute the commands below to build and push the loading image to the Docker Hub.
 
    ```powershell
-   cd ../extracting
+   cd ../loading
    docker build -t YOURDOCKERACCOUNTNAME/loading .
    docker push YOURDOCKERACCOUNTNAME/loading
    ```
@@ -71,7 +71,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 6. Execute the commands below to build and push the rendering image to the Docker Hub.
 
    ```powershell
-   cd ../extracting
+   cd ../rendering
    docker build -t YOURDOCKERACCOUNTNAME/rendering .
    docker push YOURDOCKERACCOUNTNAME/rendering
    ```
@@ -138,7 +138,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
    * **Storage Account Name**: the name of the storage account created in the previous steps
    * **Storage Share Name**: the name of the file share created in the previous steps, which is `acishare` by default
    * **Administrator Login**:  the user name of the Postgres database
-   * **Administrator Login Password**: the password of the Postgres database, it must meet the complexity requirements, e.g. `postgres1!`
+   * **Administrator Login Password**: the password of the Postgres database, it must meet the complexity requirements, e.g. `p1L!6hhA2v`
    * **Extracting Container Image**: the Docker image you built for the extracting container
    * **Transforming Container Image**: the docker image you built for the transforming container
    * **Loading Container Image**: the docker image you built for the loading container
