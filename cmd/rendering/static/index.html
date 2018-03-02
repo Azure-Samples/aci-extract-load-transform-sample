@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Word Cloud</title>
+    <style>
+        body {
+            position: relative;
+            font-family: "Helvetica Neue", sans-serif;
+            width: 960px;
+            height: 600px;
+            margin: auto;
+            margin-bottom: 1em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="/static/d3.min.js"></script>
+    <script src="/static/d3.layout.cloud.js"></script>
+    <script>
+        var fill = d3.scale.category20();
+        var layout = d3.layout.cloud()
+            .size([960, 600])
+            .padding(5)
+            .font("Impact");
+
+        function loadData() {
+            d3.json("/")
+                .post("", function(err, data) {
+                    if (!err) {
+                        if (data.length > 0) {
+
+                            var max = d3.max(data, function(d) {
+                                return d.size;
+                            });
+                            var min = d3.min(data, function(d) {
+                                return d.size;
+                            });
+                            var fontSize = d3.scale.linear()
+                                .domain([min, max])
+                                .range([10, 100]);
+
+                            layout.fontSize(function(d) {
+                                return fontSize(d.size);
+                            });
+                            layout.words(data);
+                            layout.rotate(function() {
+                                return (~~(Math.random() * 8) - 4) * 15;
+                            })
+                            layout.start();
+                            draw(data);
+                        }
+                    }
+                })
+        }
+
+        function draw(words) {
+            d3.select("body").append("svg")
+                .attr("width", layout.size()[0])
+                .attr("height", layout.size()[1])
+                .append("g")
+                .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function(d) {
+                    return d.size + "px";
+                })
+                .style("font-family", "Impact")
+                .style("fill", function(d, i) {
+                    return fill(i);
+                })
+                .attr("text-anchor", "middle")
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) {
+                    return d.text;
+                });
+        }
+
+        loadData();
+    </script>
+</body>
+
+</html>
