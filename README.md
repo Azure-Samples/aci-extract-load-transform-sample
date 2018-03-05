@@ -34,7 +34,9 @@ An Azure Active Directory (AAD) is required to register the app registrations. I
 
 * All app registrations are created in the ETL AAD. 
 
-An Azure Subscription is required to deploy the Azure components. The [ARM Template](azuredeploy.json) deploys these Azure components automatically. 
+An Azure Subscription is required to deploy the Azure components. The [ARM Template](azuredeploy.json) deploys these Azure components automatically.
+
+![](images/architecture.png)
 
 ## Build Docker Images
 
