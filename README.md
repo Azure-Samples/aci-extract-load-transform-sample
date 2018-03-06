@@ -1,3 +1,9 @@
+---
+services: containerinstances
+platforms: azure
+author: juluk
+---
+
 # Extracting, transforming, and loading data with Azure Container Instances (ACI)
 
 In this sample, we're analyzing the [HappyDB](https://github.com/rit-public/HappyDB) dataset by creating a word cloud of the most frequent words in people's self-reported happiest moments. We'll extract a data source, load it into a database, and transform the data into something we can render graphically.
