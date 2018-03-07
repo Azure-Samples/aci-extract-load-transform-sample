@@ -6,17 +6,21 @@ In this sample, we're analyzing the [HappyDB](https://github.com/rit-public/Happ
 
 [Foreword](#foreword)
 
-[Build Docker Images](#build-docker-images)
+[Prerequests](#prerequisites)
+
+[Build Docker images](#build-docker-images)
 
 [Create Azure Storage Account and File Share](#create-azure-storage-account-and-file-share)
 
-[Deploy Azure Components](#deploy-azure-components)
+[Deploy Azure components](#deploy-azure-components)
 
-[Check the Demo](#check-the-demo)
+[Check the demo](#check-the-demo)
 
-* [View Demo in Web](#view-demo-in-web)
+* [View demo in web](#view-demo-in-web)
 
-* [Create Index and Query Data in Azure Cloud Shell](#create-index-and-query-data-in-azure-cloud-shell)
+* [Create index and query data in Azure Cloud Shell](#create-index-and-query-data-in-azure-cloud-shell)
+
+[Cleanup](#cleanup)
 
 [References](#references)
 
@@ -30,23 +34,27 @@ With Azure Container Instances, an user can define container groups with the exa
 
 This document will guide you through the steps to deploy the solution to your environment.
 
-An Azure Active Directory (AAD) is required to register the app registrations. In this document, the AAD will be called "ETL AAD", and an account in the ETL AAD will be called ETL work account.
-
-* All app registrations are created in the ETL AAD. 
-
-An Azure Subscription is required to deploy the Azure components. The [ARM Template](azuredeploy.json) deploys these Azure components automatically.
-
 ![](images/architecture.png)
 
-## Build Docker Images
+## Prerequests
+
+The following items are required for build and deploy this demo.
+
+* An Azure Subscription is required to deploy the Azure components. The [ARM Template](azuredeploy.json) deploys these Azure components automatically.
+* To build Docker images, you should have Docker client running on your computer.
+* Visual Studio Code is recommended to clone git repo and build Docker images.
+
+## Build Docker images
+
+Following these steps, you can build Docker images for each container. These docker images are required to deploy this demo.
 
    > **Note:** The following commands are running on your own computer.
 
-1. Clone the repository with Visual Studio Code.
+1. Clone the repository
 
-2. Open **View > Integrated Terminal**.
+   > **Note:** You can do this with **Visual Studio Code**, then Open **View > Integrated Terminal**.
 
-3. Execute the commands below to build and push the extracting image to the Docker Hub.
+2. Execute the commands below to build and push the extracting image to the Docker Hub.
 
    ```powershell
    cd cmd/extracting
@@ -54,7 +62,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
    docker push YOURDOCKERACCOUNTNAME/extracting
    ```
 
-4. Execute the commands below to build and push the transforming image to the Docker Hub.
+3. Execute the commands below to build and push the transforming image to the Docker Hub.
 
    ```powershell
    cd ../transforming
@@ -62,7 +70,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
    docker push YOURDOCKERACCOUNTNAME/transforming
    ```
 
-5. Execute the commands below to build and push the loading image to the Docker Hub.
+4. Execute the commands below to build and push the loading image to the Docker Hub.
 
    ```powershell
    cd ../loading
@@ -70,7 +78,7 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
    docker push YOURDOCKERACCOUNTNAME/loading
    ```
 
-6. Execute the commands below to build and push the rendering image to the Docker Hub.
+5. Execute the commands below to build and push the rendering image to the Docker Hub.
 
    ```powershell
    cd ../rendering
@@ -80,9 +88,11 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
 ## Create Azure Storage Account and File Share
 
-> **Note:** The following commands are running on Azure Portal.
+The Azure Storage Account and File Share is required for communications between containers. So the File Share should be created before deployment.
 
-1. Open the **Cloud Shell** (Bash) in the Azure Portal.
+> **Note:** The following commands are running on Azure portal.
+
+1. Open the **Cloud Shell** (Bash) in the Azure portal.
 
    ![](images/deploy-01.png)
 
@@ -126,11 +136,17 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
    ```bash
    echo $ACI_PERS_STORAGE_ACCOUNT_NAME
    ```
-   ![](images/deploy-02.png)
 
-## Deploy Azure Components
+   ```console
+   hubert@Azure:~$ echo $ACI_PERS_STORAGE_ACCOUNT_NAME
+   mystorageaccount22929
+   ```
 
-1. Click this button to navigate to the Azure Portal deployment page.
+## Deploy Azure components
+
+By these steps, you can deploy the demo to your Azure portal.
+
+1. Click this button to navigate to the Azure portal deployment page.
 
    [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Faci-extract-load-transform-sample%2Fmaster%2Fazuredeploy.json)
 
@@ -151,9 +167,11 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
 4. Click **Purchase**
 
-## Check the Demo
+## Check the demo
 
-### View Demo in Web
+In this section, you can view the word cloud in web, or query data directly from postgres database.
+
+### View demo in web
 
 1. Open the resource group you just created.
 
@@ -167,9 +185,9 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
    ![](images/deploy-06.png)
 
-### Create Index and Query Data in Azure Cloud Shell
+### Create index and query data in Azure Cloud Shell
 
-> **Note:** The following commands are running on Azure Portal.
+> **Note:** The following commands are running on Azure portal.
 
 1. Open the resource group you just created.
 
@@ -209,8 +227,40 @@ An Azure Subscription is required to deploy the Azure components. The [ARM Templ
 
 8. Now you can see the word count data like this.
 
-   ![](images/deploy-08.png)
+   ```console
+   postgres=> CREATE INDEX ON words(name);
+   CREATE INDEX
+   postgres=> SELECT * FROM words LIMIT 10;
+      name    | count 
+   -----------+-------
+    house     |  2269 
+    felt      |  2870 
+    friend    |  6140 
+    better    |  1017 
+    threes    |   552 
+    mom       |  1470 
+    walk      |  1063 
+    watched   |  1829 
+    wonderful |   542 
+    haven     |   704 
+   (10 rows)
 
+   postgres=>
+   ```
+
+## Cleanup
+
+By these steps, you will delete all items in this demo deployed to your Azure portal.
+
+1. Open the resource group you just created.
+
+   ![](images/deploy-04.png)
+
+2. Click the **Delete resource group** button, fill the textbox with the name of the resource group, e.g. `MSAzure-ACIAKS-ETL-Demo`
+
+   ![](images/deploy-02.png)
+
+2. Click the **Delete** button.
 
 ## References
 1. Akari Asai, Sara Evensen, Behzad Golshan, Alon Halevy, Vivian Li, Andrei Lopatenko, Daniela Stepanov, Yoshihiko Suhara, Wang-Chiew Tan, Yinzhan Xu, 

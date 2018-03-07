@@ -31,6 +31,7 @@
     },
     "variables": {
         "postgresServerName": "[concat(toLower(uniqueString(resourceGroup().id)),'postgres')]",
+        "dnsNameLabel": "[concat(toLower(uniqueString(resourceGroup().id)),'rendering')]",
         "postgresFirewallRuleName": "[concat(variables('postgresServerName'),'/firewall')]",
         "extractingContainerName": "extracting",
         "transformingContainerName": "transforming",
@@ -71,7 +72,7 @@
     }, {
         "name": "MS-ACIAKS-ETLContainerGroups",
         "type": "Microsoft.ContainerInstance/containerGroups",
-        "apiVersion": "2017-10-01-preview",
+        "apiVersion": "2018-02-01-preview",
         "location": "[resourceGroup().location]",
         "dependsOn": [
             "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('postgresServerName'))]"
@@ -173,7 +174,8 @@
                 "ports": [{
                     "protocol": "tcp",
                     "port": "80"
-                }]
+                }],
+                "dnsNameLabel": "[variables('dnsNameLabel')]"
             },
             "volumes": [{
                 "name": "etl-volumn",
