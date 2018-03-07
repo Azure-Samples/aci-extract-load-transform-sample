@@ -137,6 +137,8 @@ The Azure Storage Account and File Share is required for communications between 
    echo $ACI_PERS_STORAGE_ACCOUNT_NAME
    ```
 
+   Output:
+   
    ```console
    hubert@Azure:~$ echo $ACI_PERS_STORAGE_ACCOUNT_NAME
    mystorageaccount22929
