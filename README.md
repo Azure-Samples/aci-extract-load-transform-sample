@@ -6,11 +6,11 @@ In this sample, we're analyzing the [HappyDB](https://github.com/rit-public/Happ
 
 [Foreword](#foreword)
 
-[Prerequests](#prerequisites)
+[Prerequisites](#prerequisites)
 
 [Build Docker images](#build-docker-images)
 
-[Create Azure Storage Account and File Share](#create-azure-storage-account-and-file-share)
+[Create Storage account and file share](#create-storage-account-and-file-share)
 
 [Deploy Azure components](#deploy-azure-components)
 
@@ -36,25 +36,18 @@ This document will guide you through the steps to deploy the solution to your en
 
 ![](images/architecture.png)
 
-## Prerequests
+## Prerequisites
 
-The following items are required for build and deploy this demo.
-
-* An Azure Subscription is required to deploy the Azure components. The [ARM Template](azuredeploy.json) deploys these Azure components automatically.
-* To build Docker images, you should have Docker client running on your computer.
-* Visual Studio Code is recommended to clone git repo and build Docker images.
+* Azure subscription ([get a free trial](https://azure.microsoft.com/pricing/free-trial/)).
+* [Install Docker](https://www.docker.com/get-docker) if you don't have it installed on your local machine.
 
 ## Build Docker images
 
-Following these steps, you can build Docker images for each container. These docker images are required to deploy this demo.
+Build the Docker images required for the containers on your local machine.
 
-   > **Note:** The following commands are running on your own computer.
+1. Clone this repository to your local machine.
 
-1. Clone the repository
-
-   > **Note:** You can do this with **Visual Studio Code**, then Open **View > Integrated Terminal**.
-
-2. Execute the commands below to build and push the extracting image to the Docker Hub.
+2. Execute the commands below to build and push the **extracting** image to Docker Hub.
 
    ```powershell
    cd cmd/extracting
@@ -62,7 +55,7 @@ Following these steps, you can build Docker images for each container. These doc
    docker push YOURDOCKERACCOUNTNAME/extracting
    ```
 
-3. Execute the commands below to build and push the transforming image to the Docker Hub.
+3. Execute the commands below to build and push the **transforming** image to Docker Hub.
 
    ```powershell
    cd ../transforming
@@ -70,7 +63,7 @@ Following these steps, you can build Docker images for each container. These doc
    docker push YOURDOCKERACCOUNTNAME/transforming
    ```
 
-4. Execute the commands below to build and push the loading image to the Docker Hub.
+4. Execute the commands below to build and push the **loading** image to Docker Hub.
 
    ```powershell
    cd ../loading
@@ -78,7 +71,7 @@ Following these steps, you can build Docker images for each container. These doc
    docker push YOURDOCKERACCOUNTNAME/loading
    ```
 
-5. Execute the commands below to build and push the rendering image to the Docker Hub.
+5. Execute the commands below to build and push the **rendering** image to Docker Hub.
 
    ```powershell
    cd ../rendering
@@ -86,17 +79,15 @@ Following these steps, you can build Docker images for each container. These doc
    docker push YOURDOCKERACCOUNTNAME/rendering
    ```
 
-## Create Azure Storage Account and File Share
+## Create Storage account and file share
 
-The Azure Storage Account and File Share is required for communications between containers. So the File Share should be created before deployment.
+The Storage account will be used as shared file storage for multiple containers, the file share couldn't be created in ARM template, so let's create it together with the Storage account separately on Azure portal.
 
-> **Note:** The following commands are running on Azure portal.
-
-1. Open the **Cloud Shell** (Bash) in the Azure portal.
+1. Open the **Cloud Shell** (Bash) on Azure portal.
 
    ![](images/deploy-01.png)
 
-2. Execute the command below to choose your subscription.
+2. If you have multiple subscriptions associated with your account, run the command to switch to the desired one for this deployment.
 
    ```bash
    az account set --subscription SELECTED_SUBSCRIPTION_ID
@@ -114,7 +105,7 @@ The Azure Storage Account and File Share is required for communications between 
    az group create --location eastus --name $ACI_PERS_RESOURCE_GROUP
    ```
 
-4. Execute the commands below to create the storage account.
+4. Execute the commands below to create the Storage account.
 
    ```bash
    az storage account create \
@@ -131,7 +122,7 @@ The Azure Storage Account and File Share is required for communications between 
    az storage share create -n $ACI_PERS_SHARE_NAME
    ```
 
-6. Execute the commands below to shows the storage account you created.
+6. Execute the commands below to show the Storage account you created.
 
    ```bash
    echo $ACI_PERS_STORAGE_ACCOUNT_NAME
@@ -146,7 +137,7 @@ The Azure Storage Account and File Share is required for communications between 
 
 ## Deploy Azure components
 
-By these steps, you can deploy the demo to your Azure portal.
+The steps below will deploy the required components to your Azure subscription.
 
 1. Click this button to navigate to the Azure portal deployment page.
 
@@ -155,7 +146,7 @@ By these steps, you can deploy the demo to your Azure portal.
 2. Choose the resource group created in the previous steps.
 
 3. Fill in the values on the deployment page.
-   * **Storage Account Name**: the name of the storage account created in the previous steps
+   * **Storage Account Name**: the name of the Storage account created in the previous steps
    * **Storage Share Name**: the name of the file share created in the previous steps, which is `acishare` by default
    * **Administrator Login**:  the user name of the Postgres database
    * **Administrator Login Password**: the password of the Postgres database, it must meet the complexity requirements, e.g. `p1L!6hhA2v`
@@ -171,7 +162,7 @@ By these steps, you can deploy the demo to your Azure portal.
 
 ## Check the demo
 
-In this section, you can view the word cloud in web, or query data directly from postgres database.
+In this section, you can view the word cloud in web, or query data directly from Postgres database.
 
 ### View demo in web
 
@@ -179,19 +170,17 @@ In this section, you can view the word cloud in web, or query data directly from
 
    ![](images/deploy-04.png)
 
-2. Click the container group **MS-ACIAKS-ETLContainerGroups**, notice the state of the first 3 containers is **Terminated**, while the last one is always **Running** to serve the Word Cloud.
+2. Click the container group **MS-ACIAKS-ETLContainerGroups**, notice that the state of the first 3 containers is **Terminated**, while the last one is always **Running** to serve the word cloud.
 
    ![](images/deploy-05.png)
 
-3. Copy the **IP address** from the container group blade, and open it in the browser to check the Word Cloud.
+3. Copy the **IP address** from the container group blade, and open it in the browser to check the word cloud.
 
    ![](images/deploy-06.png)
 
 ### Create index and query data in Azure Cloud Shell
 
-> **Note:** The following commands are running on Azure portal.
-
-1. Open the resource group you just created.
+1. Open the resource group you just created in Azure portal.
 
    ![](images/deploy-04.png)
 
@@ -252,18 +241,19 @@ In this section, you can view the word cloud in web, or query data directly from
 
 ## Cleanup
 
-By these steps, you will delete all items in this demo deployed to your Azure portal.
+The following steps will remove all components deployed in this demo from your Azure subscription.
 
 1. Open the resource group you just created.
 
    ![](images/deploy-04.png)
 
-2. Click the **Delete resource group** button, fill the textbox with the name of the resource group, e.g. `MSAzure-ACIAKS-ETL-Demo`
+2. Click the **Delete resource group** button, fill the textbox with the name of the resource group to confirm the deletion.
 
    ![](images/deploy-02.png)
 
 2. Click the **Delete** button.
 
 ## References
+
 1. Akari Asai, Sara Evensen, Behzad Golshan, Alon Halevy, Vivian Li, Andrei Lopatenko, Daniela Stepanov, Yoshihiko Suhara, Wang-Chiew Tan, Yinzhan Xu, 
 ``HappyDB: A Corpus of 100,000 Crowdsourced Happy Moments'', LREC '18, May 2018. (to appear)
