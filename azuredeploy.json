@@ -30,8 +30,8 @@
         }
     },
     "variables": {
+        "dnsNameLabel": "[toLower(uniqueString(resourceGroup().id))]",
         "postgresServerName": "[concat(toLower(uniqueString(resourceGroup().id)),'postgres')]",
-        "dnsNameLabel": "[concat(toLower(uniqueString(resourceGroup().id)),'rendering')]",
         "postgresFirewallRuleName": "[concat(variables('postgresServerName'),'/firewall')]",
         "extractingContainerName": "extracting",
         "transformingContainerName": "transforming",
