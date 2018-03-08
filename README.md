@@ -138,7 +138,7 @@ The Storage account will be used as shared file storage for multiple containers,
    
    ```console
    hubert@Azure:~$ echo $ACI_PERS_STORAGE_ACCOUNT_NAME
-   mystorageaccount22929
+   mystorageaccount25197
    ```
 
 ## Deploy Azure components
