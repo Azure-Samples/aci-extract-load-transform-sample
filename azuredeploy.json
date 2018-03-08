@@ -31,7 +31,7 @@
     },
     "variables": {
         "dnsNameLabel": "[toLower(uniqueString(resourceGroup().id))]",
-        "domainName": "[concat(variables('dnsNameLabel'),'.',toLower(resourceGroup().location),'.azurecontainer.io')]",
+        "fqdn": "[concat(variables('dnsNameLabel'),'.',toLower(resourceGroup().location),'.azurecontainer.io')]",
         "postgresServerName": "[concat(toLower(uniqueString(resourceGroup().id)),'postgres')]",
         "postgresFirewallRuleName": "[concat(variables('postgresServerName'),'/firewall')]",
         "extractingContainerName": "extracting",
@@ -79,7 +79,7 @@
             "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('postgresServerName'))]"
         ],
         "tags": {
-            "fqdn": "[variables('domainName')]"
+            "fqdn": "[variables('fqdn')]"
         },
         "properties": {
             "containers": [{
