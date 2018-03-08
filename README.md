@@ -28,7 +28,7 @@ In this sample, we're analyzing the [HappyDB](https://github.com/rit-public/Happ
 
 Make ETLing simpler by using Azure Container Instances as a plug and play model.
 
-The application with separate common pieces of the ETLing process into separate docker containers. For example, the unzip container in the project will take a link as an input then download and unzip the file at that link. A separate container takes a csv location as an input and puts it into a Postgres database. This allows for plug and play ETLing pipelines for the data.
+The application separates the common pieces of the ETLing process into separate docker containers. For example, the unzip container in the project will take a link as an input then download and unzip the file at that link. A separate container takes a csv location as an input and puts it into a Postgres database. This allows for plug and play ETLing pipelines for the data.
 
 With Azure Container Instances, an user can define container groups with the exact elements they want. For example put the unzip and postgres modules together and to download a zip file from a datasource, unzip it then feed it into a databases all without writing a line of code. This allows you to only pay per second using the Azure Container Instances. 
 
@@ -40,6 +40,7 @@ This document will guide you through the steps to deploy the solution to your en
 
 * Azure subscription ([get a free trial](https://azure.microsoft.com/pricing/free-trial/)).
 * [Install Docker](https://www.docker.com/get-docker) if you don't have it installed on your local machine.
+* [Install Git](https://git-scm.com/downloads) if you don't have it installed on your local machine.
 
 ## Build Docker images
 
@@ -47,7 +48,12 @@ Build the Docker images required for the containers on your local machine.
 
 1. Clone this repository to your local machine.
 
-2. Execute the commands below to build and push the **extracting** image to Docker Hub.
+    ```powershell
+    git clone https://github.com/Azure-Samples/aci-extract-load-transform-sample.git
+    cd aci-extract-load-transform-sample
+    ```
+
+2. Execute the command below to build and push the **extracting** image to Docker Hub.
 
    ```powershell
    cd cmd/extracting
@@ -55,7 +61,7 @@ Build the Docker images required for the containers on your local machine.
    docker push YOURDOCKERACCOUNTNAME/extracting
    ```
 
-3. Execute the commands below to build and push the **transforming** image to Docker Hub.
+3. Execute the command below to build and push the **transforming** image to Docker Hub.
 
    ```powershell
    cd ../transforming
@@ -63,7 +69,7 @@ Build the Docker images required for the containers on your local machine.
    docker push YOURDOCKERACCOUNTNAME/transforming
    ```
 
-4. Execute the commands below to build and push the **loading** image to Docker Hub.
+4. Execute the command below to build and push the **loading** image to Docker Hub.
 
    ```powershell
    cd ../loading
@@ -71,7 +77,7 @@ Build the Docker images required for the containers on your local machine.
    docker push YOURDOCKERACCOUNTNAME/loading
    ```
 
-5. Execute the commands below to build and push the **rendering** image to Docker Hub.
+5. Execute the command below to build and push the **rendering** image to Docker Hub.
 
    ```powershell
    cd ../rendering
@@ -149,7 +155,7 @@ The steps below will deploy the required components to your Azure subscription.
    * **Storage Account Name**: the name of the Storage account created in the previous steps
    * **Storage Share Name**: the name of the file share created in the previous steps, which is `acishare` by default
    * **Administrator Login**:  the user name of the Postgres database
-   * **Administrator Login Password**: the password of the Postgres database, it must meet the complexity requirements, e.g. `p1L!6hhA2v`
+   * **Administrator Login Password**: the password of the Postgres database, it must meet the complexity requirements, e.g. `p1L!6hhA2v`. The password will be used in [Create index and query data in Azure Cloud Shell](#create-index-and-query-data-in-azure-cloud-shell) step.
    * **Extracting Container Image**: the Docker image you built for the extracting container
    * **Transforming Container Image**: the docker image you built for the transforming container
    * **Loading Container Image**: the docker image you built for the loading container
@@ -174,7 +180,11 @@ In this section, you can view the word cloud in web, or query data directly from
 
    ![](images/deploy-05.png)
 
-3. Copy the **IP address** from the container group blade, and open it in the browser to check the word cloud.
+3. Click **Tags**
+
+   ![](images/deploy-08.png)
+
+4. Copy the tag **Domain Name** from the container group blade, and open it in the browser to check the word cloud. In this case, the domain name is `gb7h27f6tppv4.eastus.azurecontainer.io`.
 
    ![](images/deploy-06.png)
 

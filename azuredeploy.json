@@ -31,6 +31,7 @@
     },
     "variables": {
         "dnsNameLabel": "[toLower(uniqueString(resourceGroup().id))]",
+        "domainName": "[concat(variables('dnsNameLabel'),'.',toLower(resourceGroup().location),'.azurecontainer.io')]",
         "postgresServerName": "[concat(toLower(uniqueString(resourceGroup().id)),'postgres')]",
         "postgresFirewallRuleName": "[concat(variables('postgresServerName'),'/firewall')]",
         "extractingContainerName": "extracting",
@@ -77,6 +78,9 @@
         "dependsOn": [
             "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('postgresServerName'))]"
         ],
+        "tags": {
+            "Domain Name": "[variables('domainName')]"
+        },
         "properties": {
             "containers": [{
                     "name": "[variables('extractingContainerName')]",
@@ -189,9 +193,13 @@
         }
     }],
     "outputs": {
-        "containerIPv4Address": {
+        "IPAddress": {
             "type": "string",
             "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', 'MS-ACIAKS-ETLContainerGroups')).ipAddress.ip]"
+        },
+        "fqdn": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', 'MS-ACIAKS-ETLContainerGroups')).ipAddress.fqdn]"
         }
     }
 }
