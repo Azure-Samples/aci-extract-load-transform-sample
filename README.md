@@ -99,7 +99,7 @@ The Storage account will be used as shared file storage for multiple containers,
    az account set --subscription SELECTED_SUBSCRIPTION_ID
    ```
 
-3. Execute the commands below to create a new resource group.
+3. Execute the command below to create a new resource group.
 
    > **Note:** Change the placeholder `[RESOURCE_GROUP_NAME]` to the name for the new resource group you will create.
    
@@ -111,7 +111,7 @@ The Storage account will be used as shared file storage for multiple containers,
    az group create --location eastus --name $ACI_PERS_RESOURCE_GROUP
    ```
 
-4. Execute the commands below to create the Storage account.
+4. Execute the command below to create the Storage account.
 
    ```bash
    az storage account create \
@@ -121,14 +121,14 @@ The Storage account will be used as shared file storage for multiple containers,
     --sku Standard_LRS
    ```
 
-5. Execute the commands below to create the file share.
+5. Execute the command below to create the file share.
 
    ```bash
    export AZURE_STORAGE_CONNECTION_STRING=`az storage account show-connection-string --resource-group $ACI_PERS_RESOURCE_GROUP --name $ACI_PERS_STORAGE_ACCOUNT_NAME --output tsv`
    az storage share create -n $ACI_PERS_SHARE_NAME
    ```
 
-6. Execute the commands below to show the Storage account you created.
+6. Execute the command below to show the Storage account you created.
 
    ```bash
    echo $ACI_PERS_STORAGE_ACCOUNT_NAME
@@ -155,7 +155,7 @@ The steps below will deploy the required components to your Azure subscription.
    * **Storage Account Name**: the name of the Storage account created in the previous steps
    * **Storage Share Name**: the name of the file share created in the previous steps, which is `acishare` by default
    * **Administrator Login**:  the user name of the Postgres database
-   * **Administrator Login Password**: the password of the Postgres database, it must meet the complexity requirements, e.g. `p1L!6hhA2v`. The password will be used in [Create index and query data in Azure Cloud Shell](#create-index-and-query-data-in-azure-cloud-shell) step.
+   * **Administrator Login Password**: the password of the Postgres database, it must meet the complexity requirements, e.g. `p1L!6hhA2v`. You will need to make a note for this password as it will be used in the later step [Create index and query data in Azure Cloud Shell](#create-index-and-query-data-in-azure-cloud-shell).
    * **Extracting Container Image**: the Docker image you built for the extracting container
    * **Transforming Container Image**: the docker image you built for the transforming container
    * **Loading Container Image**: the docker image you built for the loading container
