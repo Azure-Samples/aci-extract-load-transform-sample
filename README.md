@@ -180,11 +180,11 @@ In this section, you can view the word cloud in web, or query data directly from
 
    ![](images/deploy-05.png)
 
-3. Click **Tags**, then copy value of the tag **Domain Name**.
+3. Click **Tags**, then copy value of the tag **fqdn**.
 
    ![](images/deploy-08.png)
 
-4. Open the **Domain Name** in the browser to check the word cloud. In this case, the domain name is `gb7h27f6tppv4.eastus.azurecontainer.io`.
+4. Open the **fqdn** in the browser to check the word cloud.
 
    ![](images/deploy-06.png)
 
