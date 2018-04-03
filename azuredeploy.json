@@ -30,6 +30,8 @@
         }
     },
     "variables": {
+        "dnsNameLabel": "[toLower(uniqueString(resourceGroup().id))]",
+        "fqdn": "[concat(variables('dnsNameLabel'),'.',toLower(resourceGroup().location),'.azurecontainer.io')]",
         "postgresServerName": "[concat(toLower(uniqueString(resourceGroup().id)),'postgres')]",
         "postgresFirewallRuleName": "[concat(variables('postgresServerName'),'/firewall')]",
         "extractingContainerName": "extracting",
@@ -71,11 +73,14 @@
     }, {
         "name": "MS-ACIAKS-ETLContainerGroups",
         "type": "Microsoft.ContainerInstance/containerGroups",
-        "apiVersion": "2017-10-01-preview",
+        "apiVersion": "2018-02-01-preview",
         "location": "[resourceGroup().location]",
         "dependsOn": [
             "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('postgresServerName'))]"
         ],
+        "tags": {
+            "fqdn": "[variables('fqdn')]"
+        },
         "properties": {
             "containers": [{
                     "name": "[variables('extractingContainerName')]",
@@ -173,7 +178,8 @@
                 "ports": [{
                     "protocol": "tcp",
                     "port": "80"
-                }]
+                }],
+                "dnsNameLabel": "[variables('dnsNameLabel')]"
             },
             "volumes": [{
                 "name": "etl-volumn",
@@ -187,9 +193,13 @@
         }
     }],
     "outputs": {
-        "containerIPv4Address": {
+        "IPAddress": {
             "type": "string",
             "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', 'MS-ACIAKS-ETLContainerGroups')).ipAddress.ip]"
+        },
+        "fqdn": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', 'MS-ACIAKS-ETLContainerGroups')).ipAddress.fqdn]"
         }
     }
 }
