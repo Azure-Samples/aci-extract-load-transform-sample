@@ -1,7 +1,7 @@
 ---
 services: containerinstances
 platforms: azure
-author: juluk
+author: dekapur
 ---
 
 # Extracting, transforming, and loading data with Azure Container Instances (ACI)
