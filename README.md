@@ -1,8 +1,15 @@
 ---
-services: containerinstances
-platforms: azure
-author: dekapur
+page_type: sample
+languages:
+- javascript
+- go
+- html
+products:
+- azure
+description: "In this sample, we're analyzing the HappyDB dataset by creating a word cloud of the most frequent words in people's self-reported happiest moments."
+urlFragment: aci-extract-load-transform-sample
 ---
+
 
 # Extracting, transforming, and loading data with Azure Container Instances (ACI)
 
